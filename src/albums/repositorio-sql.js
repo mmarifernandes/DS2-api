@@ -1,13 +1,21 @@
 const { Album } = require('./model');
 const Sequelize = require ('sequelize');
+const { MusicasAlbum } = require('./musicasalbum-model');
+const { Musica } = require('./musicas-model');
 
 class AlbumRepository {
     constructor() {
     }
 
-    async save(ex) {
-        await Album.create(ex);
+    async save(album) {
+        await Album.create(album);
     }
+    async savemusica(musica) {
+        await Musica.create(musica);
+    }
+       async savemusicaalbum(musicaalbum) {
+           await MusicasAlbum.create(musicaalbum);
+       }
 
     // async random() {
     //     const ex = await Album.findOne({
@@ -22,11 +30,16 @@ class AlbumRepository {
         return ex;
     }
 
-    async list(disciplina) {
+    async list(titulo) {
         const listagem = await Album.findAll({
             where: { 
-                disciplina
-            }
+                titulo
+            },
+            include: [{
+            model: Musica,
+            as: 'Musicas',
+
+        }]
         })
         return listagem;
     }

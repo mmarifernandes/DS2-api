@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const Album = require('./albums/model.js')
 const Musica = require('./albums/musicas-model.js')
+const MusicasAlbum = require('./albums/musicasalbum-model.js')
 
 const sequelizeCon = require('sequelize')
 // INCLUI UM MIDDLEWARE PARA FAZER UM PARSER

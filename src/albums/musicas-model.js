@@ -5,7 +5,7 @@ const { Album } = require('../albums/model')
 const { Usuario } = require('../usuarios/model');
 
 class Musica extends Model {}
-    
+
 Musica.init({
         id: {
             type: DataTypes.STRING,
@@ -21,17 +21,8 @@ Musica.init({
     modelName: 'musicas'
 });
 
-Musica.belongsTo(Album, {
-    foreignKey: 'id_album',
-    as: 'albumid'
-});
 
 Usuario.hasMany(Album);
-Album.hasMany(Musica, 
-    {
-        foreignKey: 'id_album',
-        as: 'albumid'
-    });
 
     
     sequelizeCon.sync();

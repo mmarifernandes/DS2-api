@@ -12,8 +12,6 @@ Album.init({
     titulo: DataTypes.STRING,
     data: DataTypes.STRING,
     artista: DataTypes.STRING,
-    user: DataTypes.STRING,
-    musicas: DataTypes.JSON,
 }, { 
     sequelize: sequelizeCon, 
     schema: 'public',

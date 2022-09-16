@@ -10,7 +10,7 @@ class AlbumController {
 
     async create(req, res) {
         // console.log("CRIANDO UMA NOVA QUESTAO");
-        const ex = {  
+        const album = {  
             id: crypto.randomUUID(),
             ...req.body,
             artista: req.body.artista.toUpperCase(),
@@ -18,11 +18,35 @@ class AlbumController {
 
         };
 
-        await this.repository.save(ex);
+        await this.repository.save(album);
         
         return res.json({
-            ex
+            album
         });
+    }
+
+
+      async createmusica(req, res) {
+        // INPUT
+        const id = {id: crypto.randomUUID()}
+          const musica = {
+            id: id.id,
+              ...req.body,
+            titulo: req.body.titulo.toUpperCase(),
+            
+          };
+          const musicaalbum = {
+            musicaId: id.id,
+            albumId: req.body.id_album
+          }
+        await this.repository.savemusica(musica)
+        await this.repository.savemusicaalbum(musicaalbum);
+
+        // RESPOSTA
+        return res.json({
+            musica, musicaalbum
+        });
+
     }
 
     // async random(req, res) {
@@ -31,8 +55,8 @@ class AlbumController {
     // }
 
     async list(req, res) {
-        const disciplina = req.query.disciplina.toUpperCase();
-        const listagem = await this.repository.list(disciplina);
+        const titulo = req.query.titulo.toUpperCase();
+        const listagem = await this.repository.list(titulo);
         console.log(listagem)
         return res.json(listagem);
     }
