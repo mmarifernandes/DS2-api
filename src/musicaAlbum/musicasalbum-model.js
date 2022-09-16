@@ -1,7 +1,7 @@
 const { DataTypes, Model } = require('sequelize');
 
 const { sequelizeCon } = require('../config/db-config');
-const { Album } = require('./model')
+const { Album } = require('../albums/model')
 const { Musica } = require('../albums/musicas-model.js');
 
 // class MusicasAlbum extends Model {}

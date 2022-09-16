@@ -1,6 +1,6 @@
 const { Album } = require('./model');
 const Sequelize = require ('sequelize');
-const { MusicasAlbum } = require('./musicasalbum-model');
+const { MusicasAlbum } = require('../musicaAlbum/musicasalbum-model');
 const { Musica } = require('./musicas-model');
 
 class AlbumRepository {
