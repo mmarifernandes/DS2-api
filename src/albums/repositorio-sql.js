@@ -13,9 +13,9 @@ class AlbumRepository {
     async savemusica(musica) {
         await Musica.create(musica);
     }
-       async savemusicaalbum(musicaalbum) {
-           await MusicasAlbum.create(musicaalbum);
-       }
+    async savemusicaalbum(musicaalbum) {
+        await MusicasAlbum.create(musicaalbum);
+    }
 
     // async random() {
     //     const ex = await Album.findOne({
