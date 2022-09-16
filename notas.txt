@@ -1,0 +1,7 @@
+Album
+    Título
+    Data
+    Artista
+    Músicas[]
+    Usuário que cadastrou
+    
