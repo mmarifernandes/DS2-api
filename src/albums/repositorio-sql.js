@@ -43,6 +43,25 @@ class AlbumRepository {
         })
         return listagem;
     }
+
+        async listId(id) {
+            const listagem = await Album.findAll({
+                where: {
+                    id
+                },
+                include: [{
+                    model: Musica,
+                    as: 'Musicas',
+
+                }]
+            })
+                return listagem;
+        }
+
+     async listAll() {
+        const listagem = await Album.findAll()
+        return listagem;
+    }
 }
 
 module.exports = AlbumRepository;

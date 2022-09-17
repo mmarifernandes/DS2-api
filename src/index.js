@@ -10,15 +10,13 @@ const sequelizeCon = require('sequelize')
 // DAS REQUISICOES COM JSON NO SEU BODY
 app.use(express.json());
 
-users = [];
 
 app.get('/', (req, res) => {
     return res.json({
         system: {
-            nome: "Vini",
+            nome: "AlbumLookUp",
             version: '0.0.1-SNAPSHOT'
         },
-        users
     });
 });
 
