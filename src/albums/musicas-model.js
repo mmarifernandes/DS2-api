@@ -7,12 +7,12 @@ const { Usuario } = require('../usuarios/model');
 class Musica extends Model {}
 
 Musica.init({
-        id: {
+        id_musica: {
             type: DataTypes.STRING,
             primaryKey: true
         },
     id_album: DataTypes.STRING,
-    titulo: DataTypes.STRING,
+    nome: DataTypes.STRING,
     capa: DataTypes.STRING,
     duracao: DataTypes.STRING
 }, { 
@@ -21,8 +21,21 @@ Musica.init({
     modelName: 'musicas'
 });
 
+Album.hasMany(Musica, {
+    foreignKey: 'id_album',
+    onDelete: 'cascade',
+});
 
-Usuario.hasMany(Album);
+Usuario.hasMany(Album,{
+    onDelete: 'cascade',
+    
+});
+Album.belongsTo(Usuario);
+Musica.belongsTo(Album, {
+    foreignKey: 'id_album',
+});
+
+// Usuario.hasMany(Musica);
 
     
     sequelizeCon.sync();

@@ -1,24 +1,46 @@
 const AlbumRepository = require("./repositorio-sql");
 const crypto = require("crypto");
 const { Album } = require("./model");
+const { Musica } = require("./musicas-model");
 class AlbumController {
   constructor() {
     this.repository = new AlbumRepository();
   }
 
   async create(req, res) {
+    const id = {
+      id: crypto.randomUUID()
+    };
+
     // console.log("CRIANDO UMA NOVA QUESTAO");
     const album = {
-      id: crypto.randomUUID(),
-      ...req.body,
+      id: id.id,
       artista: req.body.artista.toUpperCase(),
       titulo: req.body.titulo.toUpperCase(),
+      ...req.body,
     };
 
     await this.repository.save(album);
+    // console.log(req.body.musica.length)
+    let count = {
+      total: req.body.musica.length
+    };
+    for (let i = 0; i < count.total; i++) {
+      // console.log(i)
+      const idmusica = {
+        id: crypto.randomUUID()
+      };
+      const musica = {
+        id_musica: idmusica.id,
+        id_album: id.id,
+        ...req.body.musica[i],
+      };
+      await this.repository.savemusica(musica);
+    }
+
 
     return res.json({
-      album,
+      album
     });
   }
 
@@ -26,21 +48,16 @@ class AlbumController {
     // INPUT
     const id = { id: crypto.randomUUID() };
     const musica = {
-      id: id.id,
+      id_musica: id.id,
       ...req.body,
-      titulo: req.body.titulo.toUpperCase(),
+      nome: req.body.titulo.toUpperCase(),
     };
-    const musicaalbum = {
-      musicaId: id.id,
-      albumId: req.body.id_album,
-    };
+
     await this.repository.savemusica(musica);
-    await this.repository.savemusicaalbum(musicaalbum);
 
     // RESPOSTA
     return res.json({
       musica,
-      musicaalbum,
     });
   }
 
@@ -56,9 +73,10 @@ class AlbumController {
     }
   }
   async listId(req, res) {
-    const id = req.query.id;
+    const id = req.params.id;
+    // console.log(req.params)
     const listagem = await this.repository.listId(id);
-    if (listagem.length === 0) {
+    if (!listagem) {
       return res.status(400).json({
         msg: "NOTHING WAS FOUND",
       });
@@ -79,42 +97,63 @@ class AlbumController {
   }
 
   async update(req, res) {
-    const { id } = req.params;
-    const { titulo } = req.body;
-    const album = await Album.update(
-      {
-        ...req.body
+       let count = {
+      total: req.body.musica.length
+    };
+    const {id} = req.params;
+    console.log(id)
+    
+    const album = await Album.update({
+      ...req.body
+    }, {
+      where: {
+        id: id,
       },
-      {
-        where: {
-          id: id,
-        },
+    });
+    for (let i = 0; i < count.total; i++) {
+      const id_musica = { id: req.body.musica[i].id_musica}
+
+       const musica = await Musica.update({
+         ...req.body.musica[i]
+       }, {
+         where: {
+           id_musica: id_musica.id,
+         },
+       });
       }
-      );
-      const albumnovo = await Album.findOne({
-        where: {
-          id: id,
-        }
-      })
-    console.log(album);
-    return res.json(albumnovo);
+    const albumnovo = await Album.findOne({
+      where: {
+        id: id,
+      }
+    })
+    // console.log(id_musica);
+    return res.json({albumnovo});
   }
 
-    async updatemusica(req, res) {
-    const { id } = req.params;
-    const { titulo } = req.body;
-    const album = await Musica.update(
-      {
-        ...req.body
-      },
-      {
-        where: {
-          id: id,
-        },
-      }
-    );
-    console.log(album);
-    return res.json(album);
+  async delete(req, res) {
+        const {id} = req.params;
+    const album = Album.destroy({
+      where:{ 
+        id: req.params.id
+   }
+  })
+        return res.json(album);
+
+  // , 
+  // (err) => {
+  //    //Retornar erro quando não conseguir apagar no banco de dados
+  //    if (err) return res.status(400).json({
+  //      error: true,
+  //      message: "Error: Não foi apagado com sucesso!"
+  //    });
+
+  //    //Retornar mensagem de sucesso quando excluir o registro com sucesso no banco de dados
+  //    return res.json({
+  //      error: false,
+  //      message: "Apagado com sucesso!"
+  //    });
+  //  });
+
   }
 }
 

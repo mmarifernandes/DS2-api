@@ -19,6 +19,6 @@ Album.init({
 });
 
 
-// sequelizeCon.sync()
+sequelizeCon.sync()
    
 module.exports = { Album };
