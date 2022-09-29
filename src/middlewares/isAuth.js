@@ -9,7 +9,7 @@ const isAuth  = (req, res, next) => {
     }
 
     // validar o token
-    const tokenValidado = jwt.verify(token, "SECRET NAO PODERIA ESTAR HARDCODED");
+    const tokenValidado = jwt.verify(token, "MEU SEGREDO");
     console.log({ tokenValidado })
 
     req.user = tokenValidado;

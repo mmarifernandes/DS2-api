@@ -12,7 +12,6 @@ class AlbumController {
       id: crypto.randomUUID()
     };
 
-    // console.log("CRIANDO UMA NOVA QUESTAO");
     const album = {
       id: id.id,
       artista: req.body.artista.toUpperCase(),
@@ -21,12 +20,10 @@ class AlbumController {
     };
 
     await this.repository.save(album);
-    // console.log(req.body.musica.length)
     let count = {
       total: req.body.musica.length
     };
     for (let i = 0; i < count.total; i++) {
-      // console.log(i)
       const idmusica = {
         id: crypto.randomUUID()
       };
@@ -37,46 +34,30 @@ class AlbumController {
       };
       await this.repository.savemusica(musica);
     }
-
-
     return res.json({
       album
     });
   }
 
   async createmusica(req, res) {
-    // INPUT
     const id = { id: crypto.randomUUID() };
     const musica = {
       id_musica: id.id,
       ...req.body,
-      nome: req.body.titulo.toUpperCase(),
+      nome: req.body.nome,
     };
 
     await this.repository.savemusica(musica);
-
-    // RESPOSTA
     return res.json({
       musica,
     });
   }
 
-  async list(req, res) {
-    const titulo = req.query.titulo.toUpperCase();
-    const listagem = await this.repository.list(titulo);
-    if (listagem.length === 0) {
-      return res.status(400).json({
-        msg: "NOTHING WAS FOUND",
-      });
-    } else {
-      return res.json(listagem);
-    }
-  }
   async listId(req, res) {
     const id = req.params.id;
-    // console.log(req.params)
     const listagem = await this.repository.listId(id);
-    if (!listagem) {
+    console.log(listagem)
+    if (listagem.length === 0) {
       return res.status(400).json({
         msg: "NOTHING WAS FOUND",
       });
@@ -97,64 +78,117 @@ class AlbumController {
   }
 
   async update(req, res) {
-       let count = {
-      total: req.body.musica.length
-    };
-    const {id} = req.params;
-    console.log(id)
-    
-    const album = await Album.update({
-      ...req.body
-    }, {
-      where: {
-        id: id,
-      },
-    });
-    for (let i = 0; i < count.total; i++) {
-      const id_musica = { id: req.body.musica[i].id_musica}
 
-       const musica = await Musica.update({
-         ...req.body.musica[i]
-       }, {
-         where: {
-           id_musica: id_musica.id,
-         },
-       });
-      }
-    const albumnovo = await Album.findOne({
+    const { id } = req.params;
+    console.log(id)
+    const albumEcontrado = await Album.findOne({
       where: {
-        id: id,
+        id
       }
     })
-    // console.log(id_musica);
-    return res.json({albumnovo});
+    //verifica se album existe
+    if (!albumEcontrado) {
+      return res.status(400).json({
+        msg: "NOTHING WAS FOUND",
+      });
+    } else {
+      //existe
+      const album = await Album.update({
+        ...req.body
+      }, {
+        where: {
+          id: id,
+        },
+      });
+      //se existe musica p add
+      if (req.body.musica) {
+        let count = { total: req.body.musica.length };
+        for (let i = 0; i < count.total; i++) {
+          const id_musica = { id: req.body.musica[i].id_musica }
+          //existe o id da musica?
+          const musicaEcontrado = await Musica.findOne({
+            where: {
+              id_musica: id_musica.id
+            }
+          })
+          console.log(musicaEcontrado)
+          //nao
+          if (!musicaEcontrado) {
+            return res.status(400).json({
+              msg: "NOTHING WAS FOUND",
+            });
+          } else {
+            //sim
+            const musica = await Musica.update({
+              ...req.body.musica[i]
+            }, {
+              where: {
+                id_musica: id_musica.id,
+              },
+            });
+
+            const albumnovo = await Album.findOne({
+              where: {
+                id: id,
+              }
+            })
+            return res.json({ albumnovo });
+          }
+        }
+      } else {
+        const albumnovo = await Album.findOne({
+          where: {
+            id: id,
+          }
+        })
+        return res.json({ albumnovo });
+
+      }
+    }
   }
 
   async delete(req, res) {
-        const {id} = req.params;
-    const album = Album.destroy({
-      where:{ 
-        id: req.params.id
-   }
-  })
-        return res.json(album);
-
-  // , 
-  // (err) => {
-  //    //Retornar erro quando não conseguir apagar no banco de dados
-  //    if (err) return res.status(400).json({
-  //      error: true,
-  //      message: "Error: Não foi apagado com sucesso!"
-  //    });
-
-  //    //Retornar mensagem de sucesso quando excluir o registro com sucesso no banco de dados
-  //    return res.json({
-  //      error: false,
-  //      message: "Apagado com sucesso!"
-  //    });
-  //  });
-
+    const { id } = req.params;
+    const albumEcontrado = await Album.findOne({
+      where: {
+        id
+      }
+    })
+    if (albumEcontrado) {
+      const album = Album.destroy({
+        where: {
+          id: req.params.id
+        }
+      })
+      return res.json(album);
+    } else {
+      return res.status(400).json({
+        msg: "NOTHING WAS FOUND",
+      });
+    }
   }
+
+  async deletemusica(req, res) {
+    const { id } = req.params;
+    const musicaEcontrado = await Musica.findOne({
+      where: {
+        id_musica: id
+      }
+    })
+    if (musicaEcontrado) {
+      const musica = Musica.destroy({
+        where: {
+          id_musica: req.params.id
+        }
+      })
+      return res.json(musica);
+    } else {
+      return res.status(400).json({
+        msg: "NOTHING WAS FOUND",
+      });
+    }
+  }
+
 }
 
 module.exports = AlbumController;
